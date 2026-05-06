@@ -1,0 +1,18 @@
+# Environment
+.env
+backend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Node / React
+node_modules/
+frontend/dist/
+frontend/.env.local
+
+# macOS
+.DS_Store
