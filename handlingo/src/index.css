@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Public+Sans:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 220 40% 13%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 220 40% 13%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 162 84% 58%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 220 30% 18%;
+    --secondary-foreground: 210 40% 90%;
+
+    --muted: 220 25% 16%;
+    --muted-foreground: 215 20% 55%;
+
+    --accent: 263 70% 50%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 11%;
+
+    --border: 220 20% 18%;
+    --input: 220 20% 20%;
+    --ring: 162 84% 58%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 220 40% 10%;
+    --sidebar-foreground: 210 40% 90%;
+    --sidebar-primary: 162 84% 58%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 263 70% 50%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 220 20% 18%;
+    --sidebar-ring: 162 84% 58%;
+
+    --font-display: 'Hanken Grotesk', sans-serif;
+    --font-body: 'Public Sans', sans-serif;
+
+    --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+    --shadow-glow-primary: 0 0 40px hsl(162 84% 58% / 0.2);
+    --shadow-glow-accent: 0 0 40px hsl(263 70% 50% / 0.3);
+
+    --snap-curve: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --flow-curve: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-body {
+    font-family: var(--font-body);
+  }
+  .text-display {
+    font-family: var(--font-display);
+    @apply font-bold tracking-tighter;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.1;
+  }
+  .text-label {
+    @apply text-[10px] uppercase tracking-[0.12em] font-bold;
+  }
+  .video-card {
+    @apply relative aspect-video rounded-[24px] overflow-hidden bg-secondary border border-border;
+    box-shadow: var(--shadow-card);
+  }
+  .confidence-bar {
+    @apply absolute right-4 top-1/2 -translate-y-1/2 h-3/4 w-1.5 rounded-full overflow-hidden;
+    background: hsl(var(--foreground) / 0.1);
+  }
+  .node-active {
+    @apply w-20 h-20 rounded-full flex items-center justify-center;
+    background: hsl(var(--accent));
+    box-shadow: var(--shadow-glow-accent);
+  }
+  .node-complete {
+    @apply w-20 h-20 rounded-full flex items-center justify-center border-4;
+    border-color: hsl(var(--primary));
+    background: hsl(var(--primary) / 0.1);
+  }
+  .node-locked {
+    @apply w-20 h-20 rounded-full flex items-center justify-center border-4;
+    border-color: hsl(var(--muted));
+    background: hsl(var(--muted) / 0.5);
+  }
+  .glow-primary {
+    box-shadow: var(--shadow-glow-primary);
+  }
+  .glow-accent {
+    box-shadow: var(--shadow-glow-accent);
+  }
+}
