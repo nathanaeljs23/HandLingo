@@ -116,14 +116,15 @@ async def get_sublevel(
 
     sublevel_id_str = str(sublevel_id)
 
+    # postgrest-py 2.x: maybe_single().execute() returns None when no row exists.
     sub_resp = (
         await db.table("sublevels")
         .select("sublevel_id, sign_target, demo_media_url, required_reps")
         .eq("sublevel_id", sublevel_id_str)
-        .single()
+        .maybe_single()
         .execute()
     )
-    if not sub_resp.data:
+    if sub_resp is None or not sub_resp.data:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Sublevel not found.",
@@ -137,8 +138,9 @@ async def get_sublevel(
         .maybe_single()
         .execute()
     )
+    prog_data = progress_resp.data if progress_resp is not None else None
     current_status = ProgressStatus(
-        (progress_resp.data or {}).get("status", ProgressStatus.LOCKED.value)
+        (prog_data or {}).get("status", ProgressStatus.LOCKED.value)
     )
 
     if current_status == ProgressStatus.LOCKED:

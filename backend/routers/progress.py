@@ -137,14 +137,15 @@ async def update_progress(
     sublevel_id_str = str(payload.sublevel_id)
 
     # 2. Load the current sublevel (RLS will hide it if not visible to user).
+    # postgrest-py 2.x: maybe_single().execute() returns None when no row exists.
     current_sub_resp = (
         await db.table("sublevels")
         .select("sublevel_id, level_id, order_index, required_reps")
         .eq("sublevel_id", sublevel_id_str)
-        .single()
+        .maybe_single()
         .execute()
     )
-    if not current_sub_resp.data:
+    if current_sub_resp is None or not current_sub_resp.data:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Sublevel not found.",
@@ -185,10 +186,11 @@ async def update_progress(
             await db.table("levels")
             .select("order_index")
             .eq("level_id", current_sub["level_id"])
-            .single()
+            .maybe_single()
             .execute()
         )
-        current_level_order = (current_level_resp.data or {}).get("order_index", 0)
+        level_data = current_level_resp.data if current_level_resp is not None else None
+        current_level_order = (level_data or {}).get("order_index", 0)
 
         next_level_id, next_sublevel_id = await _first_sublevel_of_next_level(
             db, current_level_order

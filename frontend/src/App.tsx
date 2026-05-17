@@ -25,7 +25,7 @@ const App = () => (
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/learn" element={<ProtectedRoute><LearningRoom /></ProtectedRoute>} />
+            <Route path="/learn/:sublevelId" element={<ProtectedRoute><LearningRoom /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
