@@ -1,0 +1,81 @@
+{
+  "temperature": 0.8253968358039856,
+  "production_threshold": 0.8000000000000003,
+  "label_map": {
+    "drink": 0,
+    "eat": 1,
+    "happy": 2,
+    "hello": 3,
+    "help": 4,
+    "idle": 5,
+    "please": 6,
+    "thank you": 7,
+    "today": 8,
+    "where": 9
+  },
+  "idle_class_index": 5,
+  "feature_size": 168,
+  "sequence_length": 40,
+  "threshold_sweep": [
+    {
+      "threshold": 0.5,
+      "pass_rate": 1.0,
+      "precision": 0.9968553459119497,
+      "sign_recall": 0.9958847736625515
+    },
+    {
+      "threshold": 0.55,
+      "pass_rate": 1.0,
+      "precision": 0.9968553459119497,
+      "sign_recall": 0.9958847736625515
+    },
+    {
+      "threshold": 0.6000000000000001,
+      "pass_rate": 1.0,
+      "precision": 0.9968553459119497,
+      "sign_recall": 0.9958847736625515
+    },
+    {
+      "threshold": 0.6500000000000001,
+      "pass_rate": 1.0,
+      "precision": 0.9968553459119497,
+      "sign_recall": 0.9958847736625515
+    },
+    {
+      "threshold": 0.7000000000000002,
+      "pass_rate": 1.0,
+      "precision": 0.9968553459119497,
+      "sign_recall": 0.9958847736625515
+    },
+    {
+      "threshold": 0.7500000000000002,
+      "pass_rate": 1.0,
+      "precision": 0.9968553459119497,
+      "sign_recall": 0.9958847736625515
+    },
+    {
+      "threshold": 0.8000000000000003,
+      "pass_rate": 0.9968553459119497,
+      "precision": 1.0,
+      "sign_recall": 0.9958847736625515
+    },
+    {
+      "threshold": 0.8500000000000003,
+      "pass_rate": 0.9937106918238994,
+      "precision": 1.0,
+      "sign_recall": 0.9917695473251029
+    },
+    {
+      "threshold": 0.9000000000000004,
+      "pass_rate": 0.9905660377358491,
+      "precision": 1.0,
+      "sign_recall": 0.9876543209876543
+    },
+    {
+      "threshold": 0.9500000000000004,
+      "pass_rate": 0.9874213836477987,
+      "precision": 1.0,
+      "sign_recall": 0.9835390946502057
+    }
+  ]
+}

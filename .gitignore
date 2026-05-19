@@ -14,5 +14,8 @@ node_modules/
 frontend/dist/
 frontend/.env.local
 
+# Generated — MediaPipe binary assets (copied from node_modules by postinstall)
+frontend/public/mediapipe/
+
 # macOS
 .DS_Store
