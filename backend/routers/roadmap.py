@@ -73,6 +73,30 @@ async def get_roadmap(
         row["sublevel_id"]: row["status"] for row in (progress_resp.data or [])
     }
 
+    # Seed the very first sublevel as active for brand-new users.
+    if not progress_map and sublevels_resp.data:
+        # Ensure the public.users row exists (trigger may not have fired for older accounts).
+        await (
+            db.table("users")
+            .upsert({"user_id": user.user_id}, on_conflict="user_id")
+            .execute()
+        )
+        level_order_map = {str(lv["level_id"]): lv["order_index"] for lv in (levels_resp.data or [])}
+        first_sub = sorted(
+            sublevels_resp.data,
+            key=lambda s: (level_order_map.get(str(s["level_id"]), 9999), s["order_index"]),
+        )[0]
+        first_id = str(first_sub["sublevel_id"])
+        await (
+            db.table("user_progress")
+            .upsert(
+                {"user_id": user.user_id, "sublevel_id": first_id, "status": "active"},
+                on_conflict="user_id,sublevel_id",
+            )
+            .execute()
+        )
+        progress_map[first_id] = "active"
+
     sublevels_by_level: Dict[str, List[SublevelInRoadmap]] = {}
     for s in sublevels_resp.data or []:
         sublevels_by_level.setdefault(str(s["level_id"]), []).append(
@@ -119,7 +143,11 @@ async def get_sublevel(
     # postgrest-py 2.x: maybe_single().execute() returns None when no row exists.
     sub_resp = (
         await db.table("sublevels")
-        .select("sublevel_id, sign_target, demo_media_url, required_reps")
+        .select(
+            "sublevel_id, sign_target, demo_media_url, required_reps, "
+            "use_case, sentence_examples, cultural_note, "
+            "quiz_question, quiz_options, quiz_answer_index"
+        )
         .eq("sublevel_id", sublevel_id_str)
         .maybe_single()
         .execute()
@@ -149,10 +177,22 @@ async def get_sublevel(
             detail="This sublevel is locked. Complete the previous one first.",
         )
 
+    d = sub_resp.data
+    sentence_examples = None
+    if d.get("sentence_examples"):
+        from models import SentenceExample
+        sentence_examples = [SentenceExample(**ex) for ex in d["sentence_examples"]]
+
     return SublevelSession(
-        sublevel_id=sub_resp.data["sublevel_id"],
-        sign_target=sub_resp.data["sign_target"],
-        demo_media_url=sub_resp.data["demo_media_url"],
-        required_reps=sub_resp.data["required_reps"],
+        sublevel_id=d["sublevel_id"],
+        sign_target=d["sign_target"],
+        demo_media_url=d["demo_media_url"],
+        required_reps=d["required_reps"],
         status=current_status,
+        use_case=d.get("use_case"),
+        sentence_examples=sentence_examples,
+        cultural_note=d.get("cultural_note"),
+        quiz_question=d.get("quiz_question"),
+        quiz_options=d.get("quiz_options"),
+        quiz_answer_index=d.get("quiz_answer_index"),
     )

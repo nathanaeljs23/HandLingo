@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Hand, Shield, Zap, Eye, ArrowRight } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import { Shield, Zap, Eye, ArrowRight, LayoutDashboard, BookOpen } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const features = [
@@ -28,6 +29,8 @@ const features = [
 const Landing = () => {
   return (
     <div className="min-h-screen bg-background relative">
+      <Navbar />
+
       {/* Animated Background Decorations */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-20 left-10 w-96 h-96 rounded-full bg-primary/5 blur-3xl animate-pulse" />
@@ -56,37 +59,40 @@ const Landing = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-6 py-32">
+        <div className="relative max-w-7xl mx-auto px-6 pt-16 py-32">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
             className="max-w-2xl"
           >
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-                <Hand className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <span className="font-display font-bold text-xl text-foreground">
-                HandLingo
-              </span>
-            </div>
-
             <h1 className="text-display text-foreground text-balance mb-6">
               Speak with your hands.{" "}
               <span className="text-primary">Validated in real-time.</span>
             </h1>
 
-            <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-xl">
-              Learn International Sign Language through your webcam. Our GRU
-              neural network watches your gestures and confirms your form —
-              instantly.
+            <p className="text-lg text-muted-foreground leading-relaxed mb-4 max-w-xl">
+              Learn International Sign Language through your webcam. HandLingo
+              is built for learners, travelers, and professionals who want to
+              bridge communication gaps — one gesture at a time.
+            </p>
+
+            <p className="text-sm text-muted-foreground leading-relaxed mb-10 max-w-xl">
+              Our GRU neural network watches your gestures and confirms your
+              form instantly — no uploads, no waiting, no cloud.
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <Link to="/auth">
+              <Link to="/dashboard">
                 <Button variant="hero" size="xl">
-                  Start Learning
+                  <LayoutDashboard className="w-5 h-5" />
+                  Dashboard
+                </Button>
+              </Link>
+              <Link to="/learn">
+                <Button variant="outline" size="xl" className="border-primary/40 text-foreground hover:bg-primary/10">
+                  <BookOpen className="w-5 h-5" />
+                  Learn
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </Link>

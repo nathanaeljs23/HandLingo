@@ -53,12 +53,13 @@ const LearningRoom = () => {
       api.updateProgress(token, sublevelId!, repsCompleted, confidenceScore),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["roadmap"] });
-      toast({ title: "Level up!", description: data.message });
-      if (data.next_sublevel_id) {
-        setTimeout(() => navigate(`/learn/${data.next_sublevel_id}`), 1500);
-      } else {
-        setTimeout(() => navigate("/dashboard"), 1500);
-      }
+      navigate(`/complete/${sublevelId}`, {
+        state: {
+          nextSublevelId: data.next_sublevel_id ?? null,
+          nextLevelId: data.next_level_id ?? null,
+        },
+        replace: true,
+      });
     },
     onError: (err: Error) => {
       toast({ title: "Could not save progress", description: err.message, variant: "destructive" });

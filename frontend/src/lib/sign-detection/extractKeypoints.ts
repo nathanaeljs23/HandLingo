@@ -76,6 +76,7 @@ export function extractKeypoints(
   const hasLeft = leftHandLandmarks && leftHandLandmarks.length === 21;
   const hasRight = rightHandLandmarks && rightHandLandmarks.length === 21;
 
+  console.log("[detection]", { hasPose: !!hasPose, hasLeft: !!hasLeft, hasRight: !!hasRight });
   if (!hasPose && !hasLeft && !hasRight) return null;
 
   const features = new Float32Array(162); // wrist velocities [162:168] appended later

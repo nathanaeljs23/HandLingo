@@ -39,12 +39,23 @@ export interface RoadmapResponse {
   levels: LevelInRoadmap[];
 }
 
+export interface SentenceExample {
+  isl: string[];
+  english: string;
+}
+
 export interface SublevelSession {
   sublevel_id: string;
   sign_target: string;
   demo_media_url: string;
   required_reps: number;
   status: ProgressStatus;
+  use_case: string | null;
+  sentence_examples: SentenceExample[] | null;
+  cultural_note: string | null;
+  quiz_question: string | null;
+  quiz_options: string[] | null;
+  quiz_answer_index: number | null;
 }
 
 export interface ProgressUpdateResponse {
@@ -52,6 +63,7 @@ export interface ProgressUpdateResponse {
   next_sublevel_id: string | null;
   next_level_id: string | null;
   message: string;
+  bonus_xp: number;
 }
 
 export const api = {
@@ -66,6 +78,7 @@ export const api = {
     sublevelId: string,
     repsCompleted: number,
     confidenceScore: number,
+    quizCorrect?: boolean,
   ) =>
     request<ProgressUpdateResponse>("/progress/update", token, {
       method: "POST",
@@ -73,6 +86,7 @@ export const api = {
         sublevel_id: sublevelId,
         reps_completed: repsCompleted,
         confidence_score: confidenceScore,
+        ...(quizCorrect !== undefined && { quiz_correct: quizCorrect }),
       }),
     }),
 };

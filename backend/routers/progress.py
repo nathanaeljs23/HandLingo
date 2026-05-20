@@ -215,4 +215,5 @@ async def update_progress(
         next_sublevel_id=next_sublevel_id,
         next_level_id=next_level_id,
         message=message,
+        bonus_xp=20 if payload.quiz_correct is True else 0,
     )

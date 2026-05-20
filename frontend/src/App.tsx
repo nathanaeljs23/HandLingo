@@ -8,7 +8,9 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
+import DashboardPage from "./pages/DashboardPage";
 import LearningRoom from "./pages/LearningRoom";
+import SignCompletePage from "./pages/SignCompletePage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
@@ -24,8 +26,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<AuthPage />} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+            <Route path="/learn" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/learn/:sublevelId" element={<ProtectedRoute><LearningRoom /></ProtectedRoute>} />
+            <Route path="/complete/:sublevelId" element={<ProtectedRoute><SignCompletePage /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>

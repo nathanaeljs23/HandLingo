@@ -113,11 +113,16 @@ create policy "sublevels: authenticated read"
 -- users — each user sees and updates only their own row
 alter table public.users enable row level security;
 drop policy if exists "users: own row select" on public.users;
+drop policy if exists "users: own row insert" on public.users;
 drop policy if exists "users: own row update" on public.users;
 create policy "users: own row select"
   on public.users for select
   to authenticated
   using (user_id = auth.uid());
+create policy "users: own row insert"
+  on public.users for insert
+  to authenticated
+  with check (user_id = auth.uid());
 create policy "users: own row update"
   on public.users for update
   to authenticated

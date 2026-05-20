@@ -89,10 +89,15 @@ class RoadmapResponse(BaseModel):
     levels: List[LevelInRoadmap]
 
 
+class SentenceExample(BaseModel):
+    isl: List[str]
+    english: str
+
+
 class SublevelSession(BaseModel):
     """
-    Lightweight payload returned from GET /sublevel/{id}.
-    Contains only what the Learning Room needs to render.
+    Payload returned from GET /sublevel/{id}.
+    Includes learning-room essentials + Sign Complete page content.
     """
 
     sublevel_id: UUID
@@ -100,6 +105,12 @@ class SublevelSession(BaseModel):
     demo_media_url: str
     required_reps: int
     status: ProgressStatus
+    use_case: Optional[str] = None
+    sentence_examples: Optional[List[SentenceExample]] = None
+    cultural_note: Optional[str] = None
+    quiz_question: Optional[str] = None
+    quiz_options: Optional[List[str]] = None
+    quiz_answer_index: Optional[int] = None
 
 
 # ---------------------------------------------------------------------------
@@ -128,6 +139,10 @@ class ProgressUpdateRequest(BaseModel):
         le=1.0,
         description="Aggregated GRU confidence for the completed sequence.",
     )
+    quiz_correct: Optional[bool] = Field(
+        default=None,
+        description="Whether the user answered the bonus quiz correctly.",
+    )
 
 
 class ProgressUpdateResponse(BaseModel):
@@ -135,3 +150,4 @@ class ProgressUpdateResponse(BaseModel):
     next_sublevel_id: Optional[UUID] = None
     next_level_id: Optional[UUID] = None
     message: str
+    bonus_xp: int = 0

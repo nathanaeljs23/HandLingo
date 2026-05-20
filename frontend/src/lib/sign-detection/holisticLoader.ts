@@ -10,8 +10,8 @@ export function createHolistic(onResults: (results: Results) => void): Holistic 
     smoothLandmarks: true,
     refineFaceLandmarks: false,
     enableSegmentation: false,
-    minDetectionConfidence: 0.8,
-    minTrackingConfidence: 0.8,
+    minDetectionConfidence: 0.3,
+    minTrackingConfidence: 0.3,
   });
 
   holistic.onResults(onResults);
