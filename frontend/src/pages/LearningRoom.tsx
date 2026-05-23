@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useTransform,
+  animate,
+} from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Camera,
@@ -41,7 +47,12 @@ const LearningRoom = () => {
   const frameMotion = useMotionValue(0);
   const frameDisplay = useTransform(frameMotion, (v) => Math.round(v));
 
-  const { data: sublevel, isLoading, isError, error } = useQuery({
+  const {
+    data: sublevel,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["sublevel", sublevelId, token],
     queryFn: () => api.getSublevel(token, sublevelId!),
     enabled: !!token && !!sublevelId,
@@ -49,7 +60,13 @@ const LearningRoom = () => {
   });
 
   const progressMutation = useMutation({
-    mutationFn: ({ repsCompleted, confidenceScore }: { repsCompleted: number; confidenceScore: number }) =>
+    mutationFn: ({
+      repsCompleted,
+      confidenceScore,
+    }: {
+      repsCompleted: number;
+      confidenceScore: number;
+    }) =>
       api.updateProgress(token, sublevelId!, repsCompleted, confidenceScore),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["roadmap"] });
@@ -62,7 +79,11 @@ const LearningRoom = () => {
       });
     },
     onError: (err: Error) => {
-      toast({ title: "Could not save progress", description: err.message, variant: "destructive" });
+      toast({
+        title: "Could not save progress",
+        description: err.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -85,7 +106,10 @@ const LearningRoom = () => {
         setReps(newReps);
         setFeedbackState("success");
         if (newReps >= requiredReps) {
-          progressMutation.mutate({ repsCompleted: newReps, confidenceScore: result.score / 100 });
+          progressMutation.mutate({
+            repsCompleted: newReps,
+            confidenceScore: result.score / 100,
+          });
         }
       } else if (result.feedback === "almost") {
         setFeedbackState("low-confidence");
@@ -136,7 +160,9 @@ const LearningRoom = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
         <p className="text-muted-foreground">
-          {isLocked ? "This sublevel is locked. Complete the previous one first." : message}
+          {isLocked
+            ? "This sublevel is locked. Complete the previous one first."
+            : message}
         </p>
         <Button variant="outline" onClick={() => navigate("/dashboard")}>
           <ArrowLeft className="w-4 h-4" /> Back to Dashboard
@@ -203,21 +229,29 @@ const LearningRoom = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <p className="text-label text-muted-foreground mb-3">Watch Pattern</p>
+            <p className="text-label text-muted-foreground mb-3">
+              Watch Pattern
+            </p>
             <div className="video-card">
-              <div className="absolute inset-0 flex items-center justify-center bg-secondary">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">🤟</div>
-                  <p className="text-muted-foreground text-sm">
-                    {sublevel?.demo_media_url.includes("placeholder")
-                      ? "Demo video coming soon"
-                      : sublevel?.sign_target}
-                  </p>
-                  <Button variant="ghost" size="sm" className="mt-3 gap-2">
-                    <Volume2 className="w-4 h-4" /> Replay
-                  </Button>
+              {sublevel?.sign_target ? (
+                <video
+                  src={`/videos/${sublevel.sign_target.toLowerCase().replace(/\s+/g, "_")}.mp4`}
+                  controls
+                  autoPlay
+                  loop
+                  muted
+                  className="w-full h-full object-cover rounded-xl"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-secondary px-4 text-center">
+                  <div>
+                    <div className="text-6xl mb-4">🤟</div>
+                    <p className="text-muted-foreground text-sm">
+                      Demo video coming soon
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </motion.div>
 
@@ -252,7 +286,9 @@ const LearningRoom = () => {
               {showOverlay && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-secondary/80 gap-3">
                   <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  <p className="text-sm text-muted-foreground">Loading model…</p>
+                  <p className="text-sm text-muted-foreground">
+                    Loading model…
+                  </p>
                 </div>
               )}
 
