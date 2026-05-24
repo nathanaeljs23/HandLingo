@@ -1,8 +1,11 @@
 // Copies MediaPipe Holistic binary assets from node_modules to public/
 // so the browser can load them locally without hitting a CDN.
 // Run automatically via the postinstall npm script.
-const fs   = require("fs");
-const path = require("path");
+import fs   from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const src  = path.join(__dirname, "..", "node_modules", "@mediapipe", "holistic");
 const dest = path.join(__dirname, "..", "public", "mediapipe", "holistic");

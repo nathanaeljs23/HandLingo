@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Camera,
   AlertTriangle,
   CheckCircle2,
   XCircle,
-  Shield,
   Volume2,
   ArrowLeft,
   Play,
@@ -38,10 +37,13 @@ const LearningRoom = () => {
 
   const [feedbackState, setFeedbackState] = useState<FeedbackState>("idle");
   const [reps, setReps] = useState(0);
-  const frameMotion = useMotionValue(0);
-  const frameDisplay = useTransform(frameMotion, (v) => Math.round(v));
 
-  const { data: sublevel, isLoading, isError, error } = useQuery({
+  const {
+    data: sublevel,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ["sublevel", sublevelId, token],
     queryFn: () => api.getSublevel(token, sublevelId!),
     enabled: !!token && !!sublevelId,
@@ -49,7 +51,13 @@ const LearningRoom = () => {
   });
 
   const progressMutation = useMutation({
-    mutationFn: ({ repsCompleted, confidenceScore }: { repsCompleted: number; confidenceScore: number }) =>
+    mutationFn: ({
+      repsCompleted,
+      confidenceScore,
+    }: {
+      repsCompleted: number;
+      confidenceScore: number;
+    }) =>
       api.updateProgress(token, sublevelId!, repsCompleted, confidenceScore),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["roadmap"] });
@@ -62,7 +70,11 @@ const LearningRoom = () => {
       });
     },
     onError: (err: Error) => {
-      toast({ title: "Could not save progress", description: err.message, variant: "destructive" });
+      toast({
+        title: "Could not save progress",
+        description: err.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -73,6 +85,7 @@ const LearningRoom = () => {
     loadError,
     state: detectorState,
     countdownValue,
+    framesRecorded,
     trackingLost,
     lastResult,
     videoRef,
@@ -85,7 +98,10 @@ const LearningRoom = () => {
         setReps(newReps);
         setFeedbackState("success");
         if (newReps >= requiredReps) {
-          progressMutation.mutate({ repsCompleted: newReps, confidenceScore: result.score / 100 });
+          progressMutation.mutate({
+            repsCompleted: newReps,
+            confidenceScore: result.score / 100,
+          });
         }
       } else if (result.feedback === "almost") {
         setFeedbackState("low-confidence");
@@ -104,18 +120,6 @@ const LearningRoom = () => {
   useEffect(() => {
     if (loadError) setFeedbackState("camera-denied");
   }, [loadError]);
-
-  useEffect(() => {
-    if (detectorState === "RECORDING") {
-      frameMotion.set(0);
-      const controls = animate(frameMotion, 40, {
-        duration: 40 / 30,
-        ease: "linear",
-      });
-      return () => controls.stop();
-    }
-    frameMotion.set(0);
-  }, [detectorState, frameMotion]);
 
   const handleStart = () => {
     setFeedbackState("detecting");
@@ -136,7 +140,9 @@ const LearningRoom = () => {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
         <p className="text-muted-foreground">
-          {isLocked ? "This sublevel is locked. Complete the previous one first." : message}
+          {isLocked
+            ? "This sublevel is locked. Complete the previous one first."
+            : message}
         </p>
         <Button variant="outline" onClick={() => navigate("/dashboard")}>
           <ArrowLeft className="w-4 h-4" /> Back to Dashboard
@@ -203,21 +209,29 @@ const LearningRoom = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <p className="text-label text-muted-foreground mb-3">Watch Pattern</p>
+            <p className="text-label text-muted-foreground mb-3">
+              Watch Pattern
+            </p>
             <div className="video-card">
-              <div className="absolute inset-0 flex items-center justify-center bg-secondary">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">🤟</div>
-                  <p className="text-muted-foreground text-sm">
-                    {sublevel?.demo_media_url.includes("placeholder")
-                      ? "Demo video coming soon"
-                      : sublevel?.sign_target}
-                  </p>
-                  <Button variant="ghost" size="sm" className="mt-3 gap-2">
-                    <Volume2 className="w-4 h-4" /> Replay
-                  </Button>
+              {sublevel?.sign_target ? (
+                <video
+                  src={`/videos/${sublevel.sign_target.toLowerCase().replace(/\s+/g, "_")}.mp4`}
+                  controls
+                  autoPlay
+                  loop
+                  muted
+                  className="w-full h-full object-cover rounded-xl"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-secondary px-4 text-center">
+                  <div>
+                    <div className="text-6xl mb-4">🤟</div>
+                    <p className="text-muted-foreground text-sm">
+                      Demo video coming soon
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </motion.div>
 
@@ -229,9 +243,6 @@ const LearningRoom = () => {
           >
             <div className="flex items-center justify-between mb-3">
               <p className="text-label text-muted-foreground">Your Camera</p>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Shield className="w-3 h-3" /> Local Processing Only
-              </div>
             </div>
 
             <div
@@ -252,7 +263,9 @@ const LearningRoom = () => {
               {showOverlay && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-secondary/80 gap-3">
                   <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  <p className="text-sm text-muted-foreground">Loading model…</p>
+                  <p className="text-sm text-muted-foreground">
+                    Loading model…
+                  </p>
                 </div>
               )}
 
@@ -296,20 +309,18 @@ const LearningRoom = () => {
                 </div>
               )}
 
-              {/* RECORDING overlay — bar fills continuously 0 → 100% over the
-                  full 1.33s recording window for a smooth, flowing motion. */}
+              {/* RECORDING overlay — counter and bar are driven by the
+                  hook's actual captured-frame count, so they stay perfectly
+                  in step with what's being recorded. */}
               {detectorState === "RECORDING" && (
                 <div className="absolute inset-0 flex flex-col items-center justify-end pb-6 gap-2">
                   <p className="text-label text-primary">
-                    Recording… <motion.span>{frameDisplay}</motion.span>/40
+                    Recording… {framesRecorded}/40
                   </p>
                   <div className="w-48 h-1.5 rounded-full bg-muted overflow-hidden">
-                    <motion.div
-                      key="record-bar"
-                      className="h-full bg-primary rounded-full origin-left"
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: 40 / 30, ease: "linear" }}
+                    <div
+                      className="h-full bg-primary rounded-full transition-[width] duration-75 ease-linear"
+                      style={{ width: `${(framesRecorded / 40) * 100}%` }}
                     />
                   </div>
                 </div>
@@ -385,7 +396,7 @@ const LearningRoom = () => {
                 <div className="flex items-center gap-3 bg-card border border-warning/30 px-6 py-3 rounded-full shadow-2xl">
                   <AlertTriangle className="w-5 h-5 text-warning" />
                   <span className="font-display font-semibold text-foreground">
-                    Move to a well-lit area and show your hands.
+                    No hands detected — keep your hands visible and try again.
                   </span>
                 </div>
               )}
