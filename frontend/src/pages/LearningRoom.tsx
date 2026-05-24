@@ -1,19 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  motion,
-  AnimatePresence,
-  useMotionValue,
-  useTransform,
-  animate,
-} from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Camera,
   AlertTriangle,
   CheckCircle2,
   XCircle,
-  Shield,
   Volume2,
   ArrowLeft,
   Play,
@@ -44,8 +37,6 @@ const LearningRoom = () => {
 
   const [feedbackState, setFeedbackState] = useState<FeedbackState>("idle");
   const [reps, setReps] = useState(0);
-  const frameMotion = useMotionValue(0);
-  const frameDisplay = useTransform(frameMotion, (v) => Math.round(v));
 
   const {
     data: sublevel,
@@ -94,6 +85,7 @@ const LearningRoom = () => {
     loadError,
     state: detectorState,
     countdownValue,
+    framesRecorded,
     trackingLost,
     lastResult,
     videoRef,
@@ -128,18 +120,6 @@ const LearningRoom = () => {
   useEffect(() => {
     if (loadError) setFeedbackState("camera-denied");
   }, [loadError]);
-
-  useEffect(() => {
-    if (detectorState === "RECORDING") {
-      frameMotion.set(0);
-      const controls = animate(frameMotion, 40, {
-        duration: 40 / 30,
-        ease: "linear",
-      });
-      return () => controls.stop();
-    }
-    frameMotion.set(0);
-  }, [detectorState, frameMotion]);
 
   const handleStart = () => {
     setFeedbackState("detecting");
@@ -263,9 +243,6 @@ const LearningRoom = () => {
           >
             <div className="flex items-center justify-between mb-3">
               <p className="text-label text-muted-foreground">Your Camera</p>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Shield className="w-3 h-3" /> Local Processing Only
-              </div>
             </div>
 
             <div
@@ -332,20 +309,18 @@ const LearningRoom = () => {
                 </div>
               )}
 
-              {/* RECORDING overlay — bar fills continuously 0 → 100% over the
-                  full 1.33s recording window for a smooth, flowing motion. */}
+              {/* RECORDING overlay — counter and bar are driven by the
+                  hook's actual captured-frame count, so they stay perfectly
+                  in step with what's being recorded. */}
               {detectorState === "RECORDING" && (
                 <div className="absolute inset-0 flex flex-col items-center justify-end pb-6 gap-2">
                   <p className="text-label text-primary">
-                    Recording… <motion.span>{frameDisplay}</motion.span>/40
+                    Recording… {framesRecorded}/40
                   </p>
                   <div className="w-48 h-1.5 rounded-full bg-muted overflow-hidden">
-                    <motion.div
-                      key="record-bar"
-                      className="h-full bg-primary rounded-full origin-left"
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: 40 / 30, ease: "linear" }}
+                    <div
+                      className="h-full bg-primary rounded-full transition-[width] duration-75 ease-linear"
+                      style={{ width: `${(framesRecorded / 40) * 100}%` }}
                     />
                   </div>
                 </div>
